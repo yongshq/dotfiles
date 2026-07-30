@@ -1,6 +1,6 @@
 eval "$(fnm env --use-on-cd)"
-eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
 
 alias ls="eza"
 alias ll="eza -la"
