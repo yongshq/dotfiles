@@ -9,11 +9,18 @@ fi
 
 source "$ZINIT_HOME/zinit.zsh"
 
-# Plugins (turbo-loaded in the background after the first prompt)
+# Plugins (turbo-loaded in the background after the first prompt).
+# Order matters: completions in fpath -> compinit -> fzf-tab -> syntax-highlighting
+# -> autosuggestions (last). fzf-tab must load after compinit but before the
+# widget-wrapping plugins (fast-syntax-highlighting, zsh-autosuggestions).
 zinit wait lucid for \
-  atload"_zsh_autosuggest_start; bindkey '^ ' autosuggest-accept; bindkey '^@' autosuggest-accept" zsh-users/zsh-autosuggestions \
-  blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
-  atinit"zpcompinit; zpcdreplay" zdharma-continuum/fast-syntax-highlighting
+  blockf atpull'zinit creinstall -q .' \
+    zsh-users/zsh-completions \
+  atinit"ZINIT[COMPINIT_OPTS]=-C; zpcompinit; zpcdreplay" \
+    Aloxaf/fzf-tab \
+  zdharma-continuum/fast-syntax-highlighting \
+  atload"!_zsh_autosuggest_start" \
+    zsh-users/zsh-autosuggestions
 
 # History
 HISTSIZE=5000
@@ -24,16 +31,30 @@ setopt sharehistory
 setopt hist_ignore_space
 setopt hist_ignore_all_dups
 setopt hist_save_no_dups
-setopt hist_ignore_dups
 setopt hist_find_no_dups
 
-# Cycle history with Ctrl+P / Ctrl+N
-bindkey '^p' history-search-backward
-bindkey '^n' history-search-forward
+# Keybindings
+bindkey -e
+bindkey '^p' history-beginning-search-backward
+bindkey '^n' history-beginning-search-forward
+
+# Completion styling
+if command -v vivid >/dev/null; then
+  export LS_COLORS="$(vivid generate catppuccin-macchiato)"
+fi
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+# Disable zsh's built-in menu so fzf-tab can take over
+zstyle ':completion:*' menu no
+# fzf-tab: preview directory contents when completing `cd`
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons=always $realpath'
 
 alias ls="eza"
 alias ll="eza -la"
 alias cat="bat"
+
+# Shell integrations
+command -v fzf >/dev/null && eval "$(fzf --zsh)"
 
 eval "$(fnm env --use-on-cd)"
 eval "$(starship init zsh)"
