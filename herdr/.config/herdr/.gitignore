@@ -1,0 +1,5 @@
+# herdr writes logs and session state into this dir (it's stow-symlinked
+# to ~/.config/herdr). Track only config.toml; ignore everything else.
+*
+!.gitignore
+!config.toml

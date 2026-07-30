@@ -1,0 +1,16 @@
+# herdr configuration — ~/.config/herdr/config.toml
+#
+# This file only sets a few overrides; everything else uses herdr's
+# defaults. See the full annotated reference (148 keys) any time with:
+#
+#     herdr --default-config
+#
+# Prefix stays ctrl+b (same as tmux), so muscle memory carries over.
+
+[theme]
+# Matches the Catppuccin theme used in ~/.config/ghostty/config.
+name = "catppuccin"
+
+[terminal]
+# New panes/tabs/workspaces open in the current pane's directory.
+new_cwd = "follow"
