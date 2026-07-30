@@ -19,17 +19,17 @@ e.g. `zsh/.zshrc` → `~/.zshrc`, `tmux/.config/tmux/tmux.conf` →
 
 ## Prerequisites
 
-[Homebrew](https://brew.sh) and the tools referenced by the configs:
-
-```sh
-brew install stow fnm starship zoxide eza bat jq tmux herdr
-```
+[Homebrew](https://brew.sh). Every CLI tool and app the configs reference is
+declared in the [`Brewfile`](./Brewfile) and installed during setup below.
 
 ## Install
 
 ```sh
 git clone git@github.com:yongshq/dotfiles.git ~/dotfiles
 cd ~/dotfiles
+
+# Install the tools the configs depend on (reads ./Brewfile)
+brew bundle
 
 # Symlink everything...
 stow zsh tmux herdr ghostty claude
