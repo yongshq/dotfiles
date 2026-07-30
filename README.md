@@ -15,7 +15,7 @@ e.g. `zsh/.zshrc` → `~/.zshrc`, `tmux/.config/tmux/tmux.conf` →
 | `tmux`   | `~/.config/tmux/`            | tmux config — sensible defaults, Ghostty truecolor, bell-based alerts |
 | `herdr`   | `~/.config/herdr/`          | [herdr](https://herdr.dev) agent multiplexer config (only `config.toml` is tracked) |
 | `ghostty` | `~/.config/ghostty/config`  | [Ghostty](https://ghostty.org) terminal config (only `config`; `auto/` is left untouched) |
-| `claude`  | `~/.claude/`                | Claude Code statusline script |
+| `claude`  | `~/.claude/`                | Claude Code config: `CLAUDE.md` (global default rules), `settings.json`, statusline script (individual files only; runtime state and `settings.local.json` stay untracked) |
 
 ## Prerequisites
 
