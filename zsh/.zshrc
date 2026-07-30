@@ -9,11 +9,27 @@ fi
 
 source "$ZINIT_HOME/zinit.zsh"
 
-# Plugins (loaded fast, in the background after the first prompt)
+# Plugins (turbo-loaded in the background after the first prompt)
 zinit wait lucid for \
-  zsh-users/zsh-autosuggestions \
-  zsh-users/zsh-completions \
-  zdharma-continuum/fast-syntax-highlighting
+  atload"_zsh_autosuggest_start; bindkey '^ ' autosuggest-accept; bindkey '^@' autosuggest-accept" zsh-users/zsh-autosuggestions \
+  blockf atpull'zinit creinstall -q .' zsh-users/zsh-completions \
+  atinit"zpcompinit; zpcdreplay" zdharma-continuum/fast-syntax-highlighting
+
+# History
+HISTSIZE=5000
+HISTFILE=~/.zsh_history
+SAVEHIST=$HISTSIZE
+setopt appendhistory
+setopt sharehistory
+setopt hist_ignore_space
+setopt hist_ignore_all_dups
+setopt hist_save_no_dups
+setopt hist_ignore_dups
+setopt hist_find_no_dups
+
+# Cycle history with Ctrl+P / Ctrl+N
+bindkey '^p' history-search-backward
+bindkey '^n' history-search-forward
 
 alias ls="eza"
 alias ll="eza -la"
