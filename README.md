@@ -13,11 +13,9 @@ e.g. `zsh/.zshrc` → `~/.zshrc`, `tmux/.config/tmux/tmux.conf` →
 |----------|------------------------------|------------|
 | `zsh`    | `~/.zshrc`                   | Shell config: `fnm`, `starship`, `zoxide` (with `cd`), `eza`/`bat` aliases |
 | `tmux`   | `~/.config/tmux/`            | tmux config — sensible defaults, Ghostty truecolor, bell-based alerts |
-| `herdr`  | `~/.config/herdr/`           | [herdr](https://herdr.dev) agent multiplexer config (only `config.toml` is tracked) |
-| `claude` | `~/.claude/`                 | Claude Code statusline script |
-
-> **Not managed here:** Ghostty's config (`~/.config/ghostty/config`) lives
-> outside this repo for now.
+| `herdr`   | `~/.config/herdr/`          | [herdr](https://herdr.dev) agent multiplexer config (only `config.toml` is tracked) |
+| `ghostty` | `~/.config/ghostty/config`  | [Ghostty](https://ghostty.org) terminal config (only `config`; `auto/` is left untouched) |
+| `claude`  | `~/.claude/`                | Claude Code statusline script |
 
 ## Prerequisites
 
@@ -34,7 +32,7 @@ git clone git@github.com:yongshq/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
 # Symlink everything...
-stow zsh tmux herdr claude
+stow zsh tmux herdr ghostty claude
 
 # ...or pick individual packages
 stow zsh
