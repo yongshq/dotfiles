@@ -1,0 +1,9 @@
+# Brewfile.macos — macOS-only casks (GUI apps).
+#
+# Loaded automatically by the main Brewfile when OS.mac? is true.
+# Linuxbrew has no cask support, so none of this applies on Linux/WSL —
+# install these another way there (distro package manager, npm, etc.).
+
+# Terminal + editor
+cask "ghostty"
+cask "claude-code"

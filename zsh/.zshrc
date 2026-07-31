@@ -56,7 +56,9 @@ alias cat="bat"
 # Shell integrations
 command -v fzf >/dev/null && eval "$(fzf --zsh)"
 
-eval "$(fnm env --use-on-cd)"
-eval "$(starship init zsh)"
+# Guarded so a machine missing any of these (e.g. a fresh Linux/WSL box)
+# still gets a working interactive shell instead of `command not found`.
+command -v fnm      >/dev/null && eval "$(fnm env --use-on-cd)"
+command -v starship >/dev/null && eval "$(starship init zsh)"
 # zoxide must be initialized at the very end of the config
-eval "$(zoxide init --cmd cd zsh)"
+command -v zoxide   >/dev/null && eval "$(zoxide init --cmd cd zsh)"

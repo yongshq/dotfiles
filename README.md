@@ -1,6 +1,8 @@
 # dotfiles
 
-Personal macOS dotfiles, managed with [GNU Stow](https://www.gnu.org/software/stow/).
+Personal dotfiles (primarily macOS; Linux/WSL supported — see
+[Linux / WSL](#linux--wsl)), managed with
+[GNU Stow](https://www.gnu.org/software/stow/).
 
 Each top-level directory is a **stow package** whose internal layout mirrors
 `$HOME`. Running `stow <package>` symlinks its contents into the right place —
@@ -41,6 +43,28 @@ stow zsh
 Stow refuses to overwrite existing real files — back up or remove any
 conflicting `~/.zshrc` etc. first, or re-run with `--adopt` to pull existing
 files into the repo.
+
+## Linux / WSL
+
+These configs run on Linux and WSL too, with a few macOS-only pieces that are
+handled or safely ignored:
+
+- **Homebrew casks** — the [`Brewfile`](./Brewfile) holds only cross-platform
+  formulae and loads the GUI casks from [`Brewfile.macos`](./Brewfile.macos)
+  *only when `OS.mac?`*. So `brew bundle` runs cleanly on Linuxbrew, which has
+  no cask support. Install the GUI apps (Ghostty, Claude Code) another way
+  there — your distro's package manager or, for Claude Code, npm.
+- **Ghostty** — inside WSL you typically use **Windows Terminal** (or WSLg) as
+  the emulator rather than Ghostty, so `ghostty/` goes unused. The
+  `macos-option-as-alt` line is a no-op off macOS; on Linux/Windows the `Alt`
+  key already sends a clean chord, so herdr's `alt+h/j/k/l` pane switching works
+  with no extra config.
+- **Everything else** — `zsh`, `tmux`, `herdr`, and `claude` are portable and
+  stow the same way. `.zshrc` has no hardcoded Homebrew paths and guards every
+  integration behind `command -v`, so missing tools degrade gracefully.
+
+Install is otherwise identical — `brew bundle` (or your distro's packages),
+then `stow zsh tmux herdr claude` (skip `ghostty` if you're not running it).
 
 ## Updating a package
 
