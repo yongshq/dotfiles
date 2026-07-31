@@ -4,6 +4,13 @@ font-size = 14
 window-padding-x = 8
 window-padding-y = 8
 
+# macos-option-as-alt: which Option key sends Alt/Meta instead of composing
+# special characters (˙∆˚¬ é – etc.).
+#   left  = LEFT Option acts as Alt (for keybindings like herdr's alt+h/j/k/l
+#           pane switching); RIGHT Option still composes special characters.
+#   true  = both Option keys act as Alt.   false = neither (macOS default).
+macos-option-as-alt = left
+
 cursor-style = block
 cursor-style-blink = true
 # Stop Ghostty's shell integration from forcing a bar cursor at the prompt

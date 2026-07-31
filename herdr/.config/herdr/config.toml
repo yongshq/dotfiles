@@ -14,3 +14,11 @@ name = "catppuccin"
 [terminal]
 # New panes/tabs/workspaces open in the current pane's directory.
 new_cwd = "follow"
+
+[keys]
+# Pane navigation: keep the default vim-style prefix chords AND add
+# prefix-free alt+h/j/k/l for instant, one-chord pane switching.
+focus_pane_left  = ["prefix+h", "alt+h"]
+focus_pane_down  = ["prefix+j", "alt+j"]
+focus_pane_up    = ["prefix+k", "alt+k"]
+focus_pane_right = ["prefix+l", "alt+l"]
