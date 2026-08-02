@@ -86,9 +86,14 @@ if [ -n "$branch" ]; then
   left+="${BRANCH}⎇ ${branch}${RESET}"
 fi
 
-# RIGHT group: model (+ ⚡) · context · cost · usage meters
-right="${MODEL}✳ ${model}${RESET}"
-[ "$fast" = "true" ] && right+=" ${AMBER}⚡${RESET}"
+# model (+ ⚡) joins dir · branch on the first (right-aligned) line
+modelseg="${MODEL}✳ ${model}${RESET}"
+[ "$fast" = "true" ] && modelseg+=" ${AMBER}⚡${RESET}"
+[ -n "$left" ] && left+="$SEP"
+left+="$modelseg"
+
+# RIGHT group (line 2): context · usage meters · diff
+right=""
 
 warn=""
 if [ -n "$ctx_pct" ] || [ -n "$ctx_size" ]; then
@@ -105,6 +110,8 @@ if [ -n "$ctx_pct" ] || [ -n "$ctx_size" ]; then
 fi
 
 NOW=$(date +%s)
+# show each meter only when the window is present (7d is often absent — it
+# populates later in a session, or not at all if there's no active weekly limit)
 [ -n "$h5" ] && right+="${SEP}$(usage 5h "$h5" "$h5r")"
 [ -n "$d7" ] && right+="${SEP}$(usage 7d "$d7" "$d7r")"
 
@@ -113,7 +120,18 @@ if [ "$add" -gt 0 ] || [ "$del" -gt 0 ]; then
   right+="${SEP}${GREEN}+${add}${RESET} ${RED}-${del}${RESET}"
 fi
 
-# single left-aligned line: dir · branch · model · ctx · usage · diff
-line="$right"
-[ -n "$left" ] && line="${left}${SEP}${right}"
-printf '%b\n' "$line"
+# two lines: dir · branch (right-aligned)  /  model · ctx · usage · diff (left)
+# Claude Code sets $COLUMNS to the terminal width before running us (tput can't
+# see it — output is captured, not a tty). Right-align by padding to that width;
+# visible length ignores ANSI color codes, so strip them before measuring.
+if [ -n "$left" ]; then
+  rendered=$(printf '%b' "$left")
+  plain=$(printf '%s' "$rendered" | sed $'s/\033\[[0-9;]*m//g')
+  cols=${COLUMNS:-0}
+  if [ "$cols" -gt 0 ] && [ "${#plain}" -lt "$cols" ]; then
+    printf '%*s%b\n' "$(( cols - ${#plain} ))" '' "$left"
+  else
+    printf '%b\n' "$left"
+  fi
+fi
+printf '%b\n' "${right#"$SEP"}"
