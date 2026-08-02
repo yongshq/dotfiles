@@ -9,6 +9,15 @@ Each top-level directory is a **stow package** whose internal layout mirrors
 e.g. `zsh/.zshrc` → `~/.zshrc`, `tmux/.config/tmux/tmux.conf` →
 `~/.config/tmux/tmux.conf`.
 
+[`AGENTS.md`](./AGENTS.md) at the repo root is the **agent-agnostic** source of
+truth for coding-agent workflow rules (commit discipline, git worktree
+conventions). Each agent's own config file just references it, so the same rules
+apply everywhere — e.g. `claude/.claude/CLAUDE.md` is a real file that imports it
+with Claude Code's `@~/dotfiles/AGENTS.md` syntax (this assumes the repo is
+cloned to `~/dotfiles`, as below). To onboard another agent (Codex, Cursor,
+Aider, …), add a package whose config file references `AGENTS.md` the same way —
+an `@`-import, an `include`, or a symlink, whatever that agent supports.
+
 ## What's inside
 
 | Package  | Links to                     | What it is |
@@ -17,7 +26,7 @@ e.g. `zsh/.zshrc` → `~/.zshrc`, `tmux/.config/tmux/tmux.conf` →
 | `tmux`   | `~/.config/tmux/`            | tmux config — sensible defaults, Ghostty truecolor, bell-based alerts |
 | `herdr`   | `~/.config/herdr/`          | [herdr](https://herdr.dev) agent multiplexer config (only `config.toml` is tracked) |
 | `ghostty` | `~/.config/ghostty/config`  | [Ghostty](https://ghostty.org) terminal config (only `config`; `auto/` is left untouched) |
-| `claude`  | `~/.claude/`                | Claude Code config: `CLAUDE.md` (global default rules), `settings.json`, statusline script (individual files only; runtime state and `settings.local.json` stay untracked) |
+| `claude`  | `~/.claude/`                | Claude Code config: `CLAUDE.md` (imports root `AGENTS.md`, the shared workflow rules, via `@`), `settings.json`, statusline script (individual files only; runtime state and `settings.local.json` stay untracked) |
 
 ## Prerequisites
 
