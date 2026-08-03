@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Claude Code statusline (Catppuccin Mocha):
-#   line 1: session name · +add -del      (session name dropped if invalid)
+#   line 1: session name · +add -del      (random placeholder title if invalid)
 #   line 2: model · effort · ctx% · 5h
 #   line 3: dir · branch
 input=$(cat)
@@ -31,6 +31,7 @@ RED='\033[38;2;243;139;168m'      # Red
 DIFF_ADD='\033[38;2;148;176;136m' # muted sage green (#94b088) — diff added lines
 DIFF_DEL='\033[38;2;196;144;152m' # muted rose (#c49098)      — diff removed lines
 SURF='\033[38;2;88;91;112m'       # Surface2 — empty track
+ITALIC='\033[3m'                  # placeholder session titles wear italic
 RESET='\033[0m'
 SEP=" ${DIM}·${RESET} "
 # heat: echo an SGR truecolor escape (as literal \033…, resolved later via %b)
@@ -153,17 +154,52 @@ diffseg=""
 { [ "$add" -gt 0 ] || [ "$del" -gt 0 ]; } && diffseg="${DIFF_ADD}+${add}${RESET} ${DIFF_DEL}-${del}${RESET}"
 
 # --- compose the three lines ---------------------------------------------
-# line 1:  session name · ⏱ dur · +add -del  — the whole line is dropped when
-#          the session name is invalid, even if duration/diff data is present
-line1=""
+# line 1:  session name · ⏱ dur · +add -del  — when the session name is invalid
+#          or absent, a random nonsensical placeholder title stands in (italic)
 sname=$(printf '%s' "$session" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
 # leading hashtag glyph marks the session name, with the duration alongside it
+SESSION_ICON=$(printf '\357\212\222')  # nf-fa-hashtag (U+F292) via UTF-8 bytes
 if [ -n "$sname" ] && [ "$sname" != "null" ]; then
-  SESSION_ICON=$(printf '\357\212\222')  # nf-fa-hashtag (U+F292) via UTF-8 bytes
   line1="${SESSION}${SESSION_ICON} ${sname}${RESET}"
-  [ -n "$durseg" ]  && line1=$(join "$line1" "$durseg")
-  [ -n "$diffseg" ] && line1=$(join "$line1" "$diffseg")
+else
+  # nonsensical-but-appropriate stand-ins, wry/self-aware & mock-epic in flavour
+  placeholders=(
+    "Untitled Shenanigans"
+    "Mystery Session"
+    "The Nameless Endeavor"
+    "A Series of Keystrokes"
+    "Definitely Doing Things"
+    "Some Assembly Required"
+    "Adventures in Terminal"
+    "Work in Progress-ish"
+    "The Unlabeled Expedition"
+    "Session Under Construction"
+    "Anonymous Tinkering"
+    "A Wild Session Appears"
+    "Chaos, Neatly Arranged"
+    "Placeholder McPlaceface"
+    "Just Vibing in the Shell"
+    "Probably Fine"
+    "Winging It Professionally"
+    "Overthinking Something Small"
+    "Ctrl+Z Standing By"
+    "Mostly Intentional"
+    "Aggressively Average Progress"
+    "Load-Bearing Confidence"
+    "This Is Going Great, Actually"
+    "The Quest for a Working Build"
+    "Saga of the Unsaved Buffer"
+    "Chronicles of the Blinking Cursor"
+    "The Long March to Green Tests"
+    "Odyssey of a Thousand Tabs"
+    "The Reckoning of the Merge Conflict"
+    "Ballad of the Forgotten Semicolon"
+  )
+  ph="${placeholders[RANDOM % ${#placeholders[@]}]}"
+  line1="${SESSION}${SESSION_ICON} ${ITALIC}${ph}${RESET}"
 fi
+[ -n "$durseg" ]  && line1=$(join "$line1" "$durseg")
+[ -n "$diffseg" ] && line1=$(join "$line1" "$diffseg")
 
 # line 2: model · effort · ctx% · 5h
 line2="$modelseg"
