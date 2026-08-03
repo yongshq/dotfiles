@@ -153,17 +153,17 @@ diffseg=""
 { [ "$add" -gt 0 ] || [ "$del" -gt 0 ]; } && diffseg="${DIFF_ADD}+${add}${RESET} ${DIFF_DEL}-${del}${RESET}"
 
 # --- compose the three lines ---------------------------------------------
-# line 1:  session name · ⏱ dur · +add -del  — the session name+duration is
-#          dropped when the name is invalid; the diff still shows on its own
+# line 1:  session name · ⏱ dur · +add -del  — the whole line is dropped when
+#          the session name is invalid, even if duration/diff data is present
 line1=""
 sname=$(printf '%s' "$session" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
 # leading hashtag glyph marks the session name, with the duration alongside it
 if [ -n "$sname" ] && [ "$sname" != "null" ]; then
   SESSION_ICON=$(printf '\357\212\222')  # nf-fa-hashtag (U+F292) via UTF-8 bytes
   line1="${SESSION}${SESSION_ICON} ${sname}${RESET}"
-  [ -n "$durseg" ] && line1=$(join "$line1" "$durseg")
+  [ -n "$durseg" ]  && line1=$(join "$line1" "$durseg")
+  [ -n "$diffseg" ] && line1=$(join "$line1" "$diffseg")
 fi
-[ -n "$diffseg" ] && line1=$(join "$line1" "$diffseg")
 
 # line 2: model · effort · ctx% · 5h
 line2="$modelseg"
