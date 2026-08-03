@@ -11,13 +11,13 @@ window-padding-y = 8
 #   true  = both Option keys act as Alt.   false = neither (macOS default).
 macos-option-as-alt = left
 
-# Split (pane) navigation: cmd+alt+h/j/k/l. Uses cmd+alt so it doesn't
+# Split (pane) navigation: alt+shift+h/j/k/l. Uses alt+shift so it doesn't
 # collide with herdr's prefix-free alt+h/j/k/l pane switching (herdr runs
 # inside Ghostty and needs alt+h/j/k/l passed through untouched).
-keybind = cmd+alt+h=goto_split:left
-keybind = cmd+alt+j=goto_split:bottom
-keybind = cmd+alt+k=goto_split:top
-keybind = cmd+alt+l=goto_split:right
+keybind = alt+shift+h=goto_split:left
+keybind = alt+shift+j=goto_split:bottom
+keybind = alt+shift+k=goto_split:top
+keybind = alt+shift+l=goto_split:right
 
 cursor-style = block
 cursor-style-blink = true
