@@ -110,9 +110,9 @@ case "$dir" in
   "$HOME"/*) dir="~/${dir#"$HOME"/}" ;;
 esac
 dirseg=""
-# Nerd Font open-folder glyph (nf-fa-folder_open, U+F07C) via its UTF-8 bytes,
-# so the private-use codepoint survives editors that would mangle it
-FOLDER=$(printf '\357\201\274')
+# Nerd Font opened-folder glyph (nf-cod-folder_opened, U+F4D4) via its UTF-8
+# bytes, so the private-use codepoint survives editors that would mangle it
+FOLDER=$(printf '\357\223\224')
 [ -n "$dir" ] && dirseg="${DIR}${FOLDER} ${dir}${RESET}"
 branchseg=""
 # fa-code-fork glyph (U+F126) via UTF-8 bytes, so it survives editors
