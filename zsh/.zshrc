@@ -60,6 +60,52 @@ alias ls="eza"
 alias ll="eza -la"
 alias cat="bat"
 
+# Discard every uncommitted change in the current repo: tracked files (modified
+# or staged) are restored to HEAD, untracked files and directories are deleted.
+# Ignored files (.env, node_modules, build output) are KEPT unless -x is given.
+# Shows exactly what will be lost and asks first; -y skips the prompt.
+# Irreversible -- uncommitted work cannot be recovered from the reflog.
+# A confirming wrapper around the OMZ git plugin's silent `gwipe`/`gpristine`.
+gnuke() {
+  emulate -L zsh
+  local nuke_ignored=0 assume_yes=0
+  while (( $# )); do
+    case $1 in
+      -x|--ignored) nuke_ignored=1 ;;
+      -y|--yes)     assume_yes=1 ;;
+      -h|--help)    print "usage: gnuke [-x|--ignored] [-y|--yes]"; return 0 ;;
+      *) print -u2 "gnuke: unknown option: $1"; return 2 ;;
+    esac
+    shift
+  done
+
+  git rev-parse --is-inside-work-tree &>/dev/null || {
+    print -u2 "gnuke: not inside a git work tree"; return 1
+  }
+
+  local -a dry=(-nd); (( nuke_ignored )) && dry+=(-x)
+  local tracked untracked
+  tracked=$(git status --porcelain --untracked-files=no)
+  untracked=$(git clean $dry | sed 's/^Would remove /  /')
+
+  [[ -z $tracked && -z $untracked ]] && { print "gnuke: already clean"; return 0 }
+
+  print "About to discard, in $(git rev-parse --show-toplevel):"
+  [[ -n $tracked   ]] && { print "\n  restore to HEAD:"; print -r -- "$tracked" | sed 's/^/  /' }
+  [[ -n $untracked ]] && { print "\n  delete:"; print -r -- "$untracked" }
+  (( nuke_ignored )) && print "\n  (-x: ignored files included)"
+
+  if (( ! assume_yes )); then
+    local reply
+    read -r "reply?
+Proceed? [y/N] "
+    [[ $reply == [yY] ]] || { print "aborted"; return 1 }
+  fi
+
+  local -a clean=(--force -d); (( nuke_ignored )) && clean+=(-x)
+  git reset --hard --quiet && git clean $clean
+}
+
 # Shell integrations
 command -v fzf >/dev/null && eval "$(fzf --zsh)"
 
