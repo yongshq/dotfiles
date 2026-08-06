@@ -8,8 +8,30 @@ Development-workflow rules for any coding agent.
 - Only create a commit when I explicitly ask you to (e.g. "commit this", "commit now"). A general instruction to do a task is NOT permission to commit.
 - The same applies to pushing, opening PRs, and other outward-facing git actions — wait for an explicit request.
 
+### Signal at each handoff point
+Rather than advancing on your own, stop and say where things stand. Each of these is a handoff, not permission to proceed:
+
+1. **Work finished / on standby** — summarize what changed, then *ask* whether to run a code review or skip it. Don't start reviewing unprompted, and don't just park on "ready for review" waiting for me to decide.
+2. **After a code review** — on top of the detailed findings, give a top-level verdict: are there issues or not. If it's all clean, say so *and* highlight that it's ready to commit. If I skip the review, go straight to this signal.
+3. **After a commit made in a worktree** — tell me it's ready to be rebased onto `main`.
+4. **After the merge/rebase lands** — clean up: delete the feature/fix branch, remove the worktree and its directory, and shut down any dev servers started during the session.
+5. **Finally** — give me a checklist of those cleanup steps plus a confirmation that everything is done.
+
+Steps 1–2 apply to any work. Steps 3–5 are worktree-specific; when work happened directly on `main`, stop after step 2 and just note anything still running.
+
 ## Parallel work with git worktrees
 When I want to work on a feature without disturbing the branch and files currently checked out — e.g. another agent session is mid-task on `main` — use a git worktree instead of switching branches in place. Prefer this over stashing or cloning.
+
+**This is the default.** Assume every new session in a repo works in parallel: branch + worktree first, before touching files. Working directly on `main` is the exception and needs me to say so explicitly ("we're working directly on main this session" or similar) — that then holds for the rest of the session.
+
+Not a strict rule, though — judge by the task, and skip the worktree without asking when it plainly doesn't earn one:
+
+- Read-only work: questions, code exploration, explaining, reviewing.
+- A trivial one-liner, or a fix I'm watching land right now.
+- Not a git repo, or the session is already inside a worktree / on a feature branch.
+- The task is *about* the current checkout's working state (e.g. "review my uncommitted changes").
+
+When it's genuinely borderline, say which way you're going in one line and keep moving — don't stall on a question.
 
 - ALWAYS create a new branch AND a worktree FIRST, before starting any of the actual work. Do not touch files for a parallel task until the branch and worktree exist.
 - Branch off `main` by default — unless I explicitly name a different base to branch from.
