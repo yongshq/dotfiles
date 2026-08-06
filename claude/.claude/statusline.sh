@@ -61,6 +61,13 @@ fmt_eta() {
   else printf '%dm' "$m"; fi
 }
 
+# fmt_clock: wall-clock time of a unix timestamp, lowercased (4:09pm)
+fmt_clock() {
+  local t
+  t=$(date -r "$1" '+%-I:%M%p' 2>/dev/null) || t=$(date -d "@$1" '+%-I:%M%p' 2>/dev/null)
+  printf '%s' "$t" | tr '[:upper:]' '[:lower:]'
+}
+
 # fmt_dur: compact elapsed time from milliseconds (2h 4m / 5m / 45s)
 fmt_dur() {
   local ms=$1 s h m
@@ -71,15 +78,20 @@ fmt_dur() {
   else printf '%ds' "$(( s % 60 ))"; fi
 }
 
-# usage: "<label> <pct>% ↻ in <eta>", pct faded grey→red; dim placeholder if absent
+# usage: "<label> <pct>% ↻ in <eta> (<clock>)", pct faded grey→red; dim placeholder if absent
 usage() {
-  local label=$1 raw=$2 reset=$3 pct out
+  local label=$1 raw=$2 reset=$3 pct out clock
   if [ -z "$raw" ]; then
     printf '%s%s %s—%s' "$DIM" "$label" "$DIM" "$RESET"; return
   fi
   pct=${raw%.*}; [ -z "$pct" ] && pct=0
   out="${DIM}${label}${RESET} $(heat "$pct")${pct}%${RESET}"
-  [ -n "$reset" ] && out+=" ${DIM}↻ in $(fmt_eta "$reset" "$NOW")${RESET}"
+  if [ -n "$reset" ]; then
+    out+=" ${DIM}↻ in $(fmt_eta "$reset" "$NOW")"
+    clock=$(fmt_clock "$reset")
+    [ -n "$clock" ] && out+=" ($clock)"
+    out+="${RESET}"
+  fi
   printf '%s' "$out"
 }
 
