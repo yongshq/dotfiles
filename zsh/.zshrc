@@ -22,6 +22,13 @@ zinit wait lucid for \
   atload"!_zsh_autosuggest_start" \
     zsh-users/zsh-autosuggestions
 
+# Oh My Zsh git aliases (gst, gco, gcb, gp, gd, glol, ...) pulled in as bare
+# snippets — no OMZ framework install. The lib must come first: the plugin's
+# branch-aware aliases call `git_current_branch`, which lives in lib/git.zsh.
+zinit wait lucid for \
+  OMZL::git.zsh \
+  OMZP::git
+
 # History
 HISTSIZE=5000
 HISTFILE=~/.zsh_history
