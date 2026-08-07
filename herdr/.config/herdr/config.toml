@@ -22,3 +22,23 @@ focus_pane_left  = ["prefix+h", "alt+h"]
 focus_pane_down  = ["prefix+j", "alt+j"]
 focus_pane_up    = ["prefix+k", "alt+k"]
 focus_pane_right = ["prefix+l", "alt+l"]
+
+# Pane layouts, via the `layouts` plugin (iurysza/herdr-pane-layouts).
+# Install with: herdr plugin install iurysza/herdr-pane-layouts --yes
+#
+# Why equalize is worth a binding: resize (built-in prefix+r, and the plugin's
+# own resize actions) pushes whichever border sits on the given side OUTWARD.
+# For a pane with neighbours on both sides that only ever grows it — to shrink
+# one you have to focus a neighbour and grow that instead. Restoring even
+# columns by hand is fiddly enough to want one key.
+[[keys.command]]
+key = "prefix+shift+e"
+type = "plugin_action"
+command = "layouts.equalize"
+description = "equalize panes as vertical columns"
+
+[[keys.command]]
+key = "prefix+space"
+type = "plugin_action"
+command = "layouts.cycle"
+description = "cycle pane layouts"
