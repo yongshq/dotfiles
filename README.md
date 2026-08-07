@@ -53,6 +53,19 @@ Stow refuses to overwrite existing real files — back up or remove any
 conflicting `~/.zshrc` etc. first, or re-run with `--adopt` to pull existing
 files into the repo.
 
+### herdr plugins
+
+Only `herdr/.config/herdr/config.toml` is tracked, so herdr's plugins live
+outside this repo and `stow` does not restore them. Install them by hand:
+
+```sh
+herdr plugin install iurysza/herdr-pane-layouts --yes
+```
+
+`config.toml` binds `prefix+shift+e` (equalize pane widths) and `prefix+space`
+(cycle layouts) to that plugin — skip the install and those two keys simply do
+nothing.
+
 ## Linux / WSL
 
 These configs run on Linux and WSL too, with a few macOS-only pieces that are
