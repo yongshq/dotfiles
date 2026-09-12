@@ -5,6 +5,9 @@
 #
 #     herdr --default-config
 #
+
+onboarding = false
+
 # Prefix stays ctrl+b (same as tmux), so muscle memory carries over.
 
 [theme]
@@ -42,3 +45,10 @@ key = "prefix+space"
 type = "plugin_action"
 command = "layouts.cycle"
 description = "cycle pane layouts"
+
+[ui.sidebar.agents]
+# Second row of each expanded agent entry. The default is ["agent"], which just
+# repeats the agent id ("claude") on every row and tells you nothing. Show the
+# session title instead, so each entry says what that session is actually doing.
+# terminal_title_stripped is the terminal title minus the leading state glyph.
+rows = [["state_icon", "workspace", "tab"], ["terminal_title_stripped"]]
