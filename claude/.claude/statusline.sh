@@ -218,6 +218,15 @@ line2="$modelseg"
 [ -n "$ctxseg" ] && line2=$(join "$line2" "$ctxseg")
 [ -n "$h5seg" ]  && line2=$(join "$line2" "$h5seg")
 
+# --- reeve context gauge ---------------------------------------------------
+# The model cannot see its own context usage, but this statusline can, so drop
+# the number somewhere the reeve can read it. Guarded on the directory already
+# existing, so it is a silent no-op on any machine without reeve installed, and
+# it can never fail the statusline.
+if [ -n "$ctx_pct" ] && [ -d "${REEVE_HOME:-$HOME/.reeve}/state" ]; then
+  printf '%s\n' "$ctx_pct" > "${REEVE_HOME:-$HOME/.reeve}/state/context" 2>/dev/null || :
+fi
+
 # line 3: dir · branch
 line3=""
 [ -n "$dirseg" ]    && line3=$(join "$line3" "$dirseg")
