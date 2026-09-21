@@ -223,8 +223,25 @@ line2="$modelseg"
 # the number somewhere the reeve can read it. Guarded on the directory already
 # existing, so it is a silent no-op on any machine without reeve installed, and
 # it can never fail the statusline.
+#
+# Per session, because this runs for EVERY claude session on the machine and not
+# only for reeve ones. One shared file held whatever the last session to render
+# happened to be using, so a reeve read a stranger's number and would offer a
+# handoff at the wrong moment, or never offer one. The same write doubles as a
+# liveness mark: a statusline renders constantly while a session is open and
+# stops the moment it closes, which is exactly the signal reeve needs to tell a
+# session that is still there from one that is gone.
 if [ -n "$ctx_pct" ] && [ -d "${REEVE_HOME:-$HOME/.reeve}/state" ]; then
-  printf '%s\n' "$ctx_pct" > "${REEVE_HOME:-$HOME/.reeve}/state/context" 2>/dev/null || :
+  rv_sid=$(printf '%s' "$input" | jq -r '.session_id // empty')
+  [ -n "$rv_sid" ] || rv_sid=${CLAUDE_CODE_SESSION_ID:-}
+  case $rv_sid in ''|*[!A-Za-z0-9._-]*|.|..) rv_sid='' ;; esac
+  if [ -n "$rv_sid" ]; then
+    rv_dir="${REEVE_HOME:-$HOME/.reeve}/state/sessions/$rv_sid"
+    if mkdir -p "$rv_dir" 2>/dev/null; then
+      printf '%s\n' "$ctx_pct" > "$rv_dir/context" 2>/dev/null || :
+      date +%s > "$rv_dir/seen" 2>/dev/null || :
+    fi
+  fi
 fi
 
 # line 3: dir · branch
