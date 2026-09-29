@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Claude Code statusline (Catppuccin Mocha):
 #   line 1: session name · +add -del      (random placeholder title if invalid)
-#   line 2: model · effort · ctx% · 5h
+#   line 2: model · effort · ctx% · 5h · 7d   (each window only while reported)
 #   line 3: dir · branch
 input=$(cat)
 
@@ -10,6 +10,8 @@ cwd=$(printf '%s'  "$input" | jq -r '.workspace.current_dir // .cwd // empty')
 fast=$(printf '%s' "$input" | jq -r '.fast_mode // false')
 h5=$(printf '%s'   "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
 h5r=$(printf '%s'  "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
+d7=$(printf '%s'   "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
+d7r=$(printf '%s'  "$input" | jq -r '.rate_limits.seven_day.resets_at // empty')
 ctx_pct=$(printf '%s'  "$input" | jq -r '.context_window.used_percentage // empty')
 ctx_used=$(printf '%s' "$input" | jq -r '((.context_window.total_input_tokens // 0) + (.context_window.total_output_tokens // 0))')
 ctx_size=$(printf '%s' "$input" | jq -r '.context_window.context_window_size // empty')
@@ -151,8 +153,9 @@ if [ -n "$ctx_pct" ] || [ -n "$ctx_size" ]; then
   [ "$cpct" -gt 0 ] && ctxseg="${DIM}ctx${RESET} $(ctxbar "$cpct") ${cc}${cpct}%${RESET}${warn}"
 fi
 
-# 5h rate-limit window (shown only when present)
+# rate-limit windows (each shown only when the API is reporting it)
 h5seg=""; [ -n "$h5" ] && h5seg="$(usage 5h "$h5" "$h5r")"
+d7seg=""; [ -n "$d7" ] && d7seg="$(usage 7d "$d7" "$d7r")"
 
 # session wall-clock duration (clock glyph + elapsed), shown when available
 durseg=""
@@ -217,6 +220,7 @@ fi
 line2="$modelseg"
 [ -n "$ctxseg" ] && line2=$(join "$line2" "$ctxseg")
 [ -n "$h5seg" ]  && line2=$(join "$line2" "$h5seg")
+[ -n "$d7seg" ]  && line2=$(join "$line2" "$d7seg")
 
 # --- reeve context gauge ---------------------------------------------------
 # The model cannot see its own context usage, but this statusline can, so drop
