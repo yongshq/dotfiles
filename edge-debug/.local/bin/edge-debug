@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# A dedicated Microsoft Edge for agent debugging: its own profile, with the
+# DevTools port open, so Claude Code can see and drive it through the
+# chrome-devtools MCP server without asking every time.
+#
+#   edge-debug          start it (does nothing if it is already up)
+#   edge-debug setup    register the chrome-devtools MCP server with Claude Code
+#
+# Anything on this machine can drive the browser through that port while it
+# runs, so keep the profile signed in to nothing personal.
+set -euo pipefail
+port=${EDGE_DEBUG_PORT:-9222}
+profile=${EDGE_DEBUG_PROFILE:-$HOME/.edge-debug-profile}
+mcp_version=1.10.1   # chrome-devtools-mcp, pinned: bump deliberately, never @latest
+
+usage() { sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; }
+
+port_up() { curl -fsS "http://127.0.0.1:$port/json/version" >/dev/null 2>&1; }
+# Edge processes on our profile, and the subset started with our port.
+profile_procs() { ps -axo args= | grep -F -- "--user-data-dir=$profile" || true; }
+ours_with_port() { profile_procs | grep -qF -- "--remote-debugging-port=$port"; }
+
+setup() {
+  command -v claude >/dev/null || { echo "claude is not installed" >&2; exit 1; }
+  command -v npx >/dev/null || { echo "npx is not on PATH (install node: fnm install --lts)" >&2; exit 1; }
+  if claude mcp get chrome-devtools >/dev/null 2>&1; then
+    echo "chrome-devtools MCP server already registered"
+  else
+    claude mcp add -s user chrome-devtools -- \
+      npx -y "chrome-devtools-mcp@$mcp_version" --browserUrl "http://127.0.0.1:$port"
+  fi
+}
+
+start() {
+  [ "$(uname -s)" = Darwin ] || { echo "edge-debug starts Edge on macOS only" >&2; exit 1; }
+  if port_up; then
+    if ours_with_port; then
+      echo "debug Edge already running on 127.0.0.1:$port"
+      return 0
+    fi
+    echo "port $port is held by another browser, not the debug profile; set EDGE_DEBUG_PORT" >&2
+    exit 1
+  fi
+  if [ -n "$(profile_procs)" ]; then
+    # open would hand the launch to that process and the port would never open.
+    echo "the debug profile is open without port $port; quit that Edge window and run again" >&2
+    exit 1
+  fi
+  mkdir -p "$profile"
+  # Headful Chromium binds the DevTools port to 127.0.0.1 by default.
+  open -na "Microsoft Edge" --args \
+    --user-data-dir="$profile" \
+    --remote-debugging-port="$port" \
+    --no-first-run --no-default-browser-check
+  for _ in $(seq 1 30); do
+    if port_up; then
+      echo "debug Edge up on 127.0.0.1:$port (profile $profile)"
+      return 0
+    fi
+    sleep 0.5
+  done
+  echo "debug Edge did not open port $port within 15s" >&2
+  exit 1
+}
+
+case $# in
+  0) start ;;
+  1) case $1 in
+       setup) setup ;;
+       -h|--help) usage ;;
+       *) usage >&2; exit 2 ;;
+     esac ;;
+  *) usage >&2; exit 2 ;;
+esac

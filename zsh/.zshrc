@@ -29,6 +29,9 @@ zinit wait lucid for \
   OMZL::git.zsh \
   OMZP::git
 
+# User-local executables, where stowed scripts such as edge-debug land
+[ -d "$HOME/.local/bin" ] && path=("$HOME/.local/bin" $path)
+
 # History
 HISTSIZE=5000
 HISTFILE=~/.zsh_history

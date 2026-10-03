@@ -7,3 +7,6 @@
 # Terminal + editor
 cask "ghostty"
 cask "claude-code"
+
+# Browser for agent debugging (see the edge-debug package)
+cask "microsoft-edge"
