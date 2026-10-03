@@ -27,6 +27,7 @@ an `@`-import, an `include`, or a symlink, whatever that agent supports.
 | `herdr`   | `~/.config/herdr/`          | [herdr](https://herdr.dev) agent multiplexer config (only `config.toml` is tracked) |
 | `ghostty` | `~/.config/ghostty/config`  | [Ghostty](https://ghostty.org) terminal config (only `config`; `auto/` is left untouched) |
 | `claude`  | `~/.claude/`                | Claude Code config: `CLAUDE.md` (imports root `AGENTS.md`, the shared workflow rules, via `@`), `settings.json`, statusline script (individual files only; runtime state and `settings.local.json` stay untracked) |
+| `edge-debug` | `~/.local/bin/edge-debug` | Launcher for a dedicated debug Microsoft Edge (own profile, DevTools port on localhost) that Claude Code drives through the `chrome-devtools` MCP server. macOS only. Stow with `--no-folding`, see [Debug Edge](#debug-edge) |
 
 ## Prerequisites
 
@@ -44,6 +45,7 @@ brew bundle
 
 # Symlink everything...
 stow zsh tmux herdr ghostty claude
+stow --no-folding edge-debug   # see Debug Edge below
 
 # ...or pick individual packages
 stow zsh
@@ -65,6 +67,41 @@ herdr plugin install iurysza/herdr-pane-layouts --yes
 `config.toml` binds `prefix+shift+e` (equalize pane widths) and `prefix+space`
 (cycle layouts) to that plugin — skip the install and those two keys simply do
 nothing.
+
+## Debug Edge
+
+A separate Microsoft Edge that a coding agent can see and drive without a
+permission prompt per action: its own profile in `~/.edge-debug-profile`, and the
+DevTools port open on `127.0.0.1:9222`, which is where headful Edge binds it.
+
+```sh
+fnm install --lts              # node, for npx (fnm from the Brewfile ships none)
+stow --no-folding edge-debug   # links ~/.local/bin/edge-debug
+exec zsh                       # pick up ~/.local/bin on PATH from the zsh package
+edge-debug setup               # registers the chrome-devtools MCP server with Claude Code (once per machine)
+edge-debug                     # starts the debug Edge; does nothing if it is already up
+```
+
+- **`--no-folding` matters.** Without it, on a machine with no `~/.local` (or
+  `~/.local/bin`) yet, stow links that whole directory into this repo, and every
+  tool that later writes under it (fnm, zoxide, anything installing into
+  `~/.local/bin`) writes into the repo instead.
+- **Permission** to use the tools without asking is `mcp__chrome-devtools` in
+  `claude/.claude/settings.json`, so it arrives with the `claude` package.
+- **The MCP registration** lives in `~/.claude.json`, which is runtime state and
+  not tracked, hence `edge-debug setup`. It needs `npx` on PATH (node via `fnm`).
+- **PATH:** `.zshrc` puts `~/.local/bin` on PATH, so the name works in any new
+  shell, the agent's included.
+- **Version:** the launcher pins `chrome-devtools-mcp`, so a new release never
+  runs unreviewed. Bump `mcp_version` in the script, then re-run
+  `claude mcp remove -s user chrome-devtools && edge-debug setup`.
+- **Security:** while it runs, anything on the machine can drive that browser
+  through the port, and with the permission above the agent can open any page
+  and run any script in it without a prompt, so a page it visits can try to
+  steer it. Keep the profile signed in to nothing personal.
+- Override with `EDGE_DEBUG_PORT` / `EDGE_DEBUG_PROFILE`. Edge, and Chrome since
+  136, ignore the debugging port on the default profile, which is why it always
+  uses its own.
 
 ## Linux / WSL
 

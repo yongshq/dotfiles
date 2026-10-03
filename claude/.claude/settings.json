@@ -48,5 +48,10 @@
       "**Org-specific CLIs**: None configured (bin/, herdr, reeve-status, reeve-survey, reeve-doctor are this repo's own tooling, used routinely under this repo's working tree)",
       "routine under ~/yongshq/reeve/ prefix: repo-local bin/* wrapper scripts and herdr/reeve-* tooling invocations"
     ]
+  },
+  "permissions": {
+    "allow": [
+      "mcp__chrome-devtools"
+    ]
   }
 }
