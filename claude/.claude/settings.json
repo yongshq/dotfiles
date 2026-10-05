@@ -49,6 +49,12 @@
   "skipWorkflowUsageWarning": true,
   "theme": "dark-ansi",
   "autoMode": {
+    "allow": [
+      "$defaults",
+      "Fast-forwarding a repo's main to a branch the reeve's reviewer approved (git merge --ff-only or git fetch . <branch>:main), under the liege's standing landing rule",
+      "Committing and pushing in ~/dotfiles when the user asked for that change",
+      "Removing a clean git worktree under ~/yongshq without --force (git refuses if it holds uncommitted work)"
+    ],
     "environment": [
       "### Org-wide",
       "**Organization**: None configured",
