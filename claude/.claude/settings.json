@@ -1,4 +1,24 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__chrome-devtools",
+      "Bash(git -C * merge --ff-only --no-overwrite-ignore *)",
+      "Bash(git -C * fetch . *:main)",
+      "Bash(git -C ~/dotfiles status*)",
+      "Bash(git -C ~/dotfiles diff*)",
+      "Bash(git -C ~/dotfiles log*)",
+      "Bash(git -C ~/dotfiles add *)",
+      "Bash(git -C ~/dotfiles commit *)",
+      "Bash(git -C ~/dotfiles push*)",
+      "Bash(git -C ~/yongshq/* worktree remove *)"
+    ],
+    "deny": [
+      "Bash(git -C * worktree remove --force*)",
+      "Bash(git -C * worktree remove -f*)",
+      "Bash(git -C * worktree remove * --force*)",
+      "Bash(git -C * worktree remove * -f*)"
+    ]
+  },
   "hooks": {
     "SessionStart": [
       {
@@ -18,7 +38,14 @@
     "command": "~/.claude/statusline.sh",
     "padding": 0
   },
-  "extraKnownMarketplaces": {},
+  "extraKnownMarketplaces": {
+    "reeve": {
+      "source": {
+        "source": "directory",
+        "path": "~/yongshq/reeve"
+      }
+    }
+  },
   "skipWorkflowUsageWarning": true,
   "theme": "dark-ansi",
   "autoMode": {
@@ -49,9 +76,7 @@
       "routine under ~/yongshq/reeve/ prefix: repo-local bin/* wrapper scripts and herdr/reeve-* tooling invocations"
     ]
   },
-  "permissions": {
-    "allow": [
-      "mcp__chrome-devtools"
-    ]
+  "enabledPlugins": {
+    "reeve@reeve": true
   }
 }
